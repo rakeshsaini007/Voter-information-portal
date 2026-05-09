@@ -95,242 +95,272 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-blue-100 font-sans">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-blue-600 p-2.5 rounded-xl shadow-lg shadow-blue-200">
-              <Database className="text-white" size={24} />
-            </div>
-            <div>
-              <h1 className="text-xl font-black tracking-tight text-slate-800 uppercase">Voter Portal</h1>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Database Management System</p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-slate-950 text-white selection:bg-indigo-500/30 font-sans relative overflow-x-hidden">
+      {/* Animated Background */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="glow-orb -top-20 -right-20 w-96 h-96 bg-indigo-500"></div>
+        <div className="glow-orb top-40 -left-20 w-72 h-72 bg-blue-500" style={{ animationDelay: '1s' }}></div>
+        <div className="glow-orb bottom-20 right-1/3 w-80 h-80 bg-purple-500" style={{ animationDelay: '2s' }}></div>
+      </div>
 
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex flex-col items-end">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">Active Part No Range</span>
-              <div className="flex items-center gap-2">
-                <MapPin size={14} className="text-blue-500" />
-                <span className="font-bold text-slate-700">{sheetName || 'Not Selected'}</span>
+      <div className="relative z-10 flex flex-col min-h-screen">
+        {/* Header */}
+        <header className="bg-white/5 backdrop-blur-2xl border-b border-white/10 sticky top-0 z-30 shadow-2xl">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="primary-gradient p-3 rounded-2xl text-white shadow-2xl shadow-indigo-500/50 transform hover:scale-110 transition-transform duration-300">
+                <Database size={24} />
+              </div>
+              <div>
+                <h1 className="text-2xl font-black tracking-tight text-white uppercase">
+                  Voter <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Portal</span>
+                </h1>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Database Management System</p>
+              </div>
+            </div>
+
+            <div className="hidden sm:flex items-center gap-4">
+              <div className="text-xs font-bold text-white/80 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+                {sheetName ? `Part: ${sheetName}` : 'Select Range'}
               </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar / Controls */}
-          <aside className="lg:col-span-1 space-y-6">
-            {/* Sheet Selection */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-              <label className="text-sm font-black text-slate-800 uppercase mb-4 flex items-center gap-2 tracking-tight">
-                <Database size={16} className="text-blue-600" />
-                1. Select Part No Range
-              </label>
-              <select 
-                value={sheetName}
-                onChange={(e) => {
-                  setSheetName(e.target.value);
-                  setSelectedVoter(null);
-                  setSearchResult([]);
-                  setError(null);
-                }}
-                className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-700 focus:border-blue-500 transition-all outline-none"
-              >
-                <option value="">-- Choose Range --</option>
-                {SHEET_RANGES.map(range => (
-                  <option key={range} value={range}>{range}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Epic Search */}
-            <div className={`bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-opacity ${!sheetName ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-              <label className="text-sm font-black text-slate-800 uppercase mb-4 flex items-center gap-2 tracking-tight">
-                <SearchCode size={16} className="text-blue-600" />
-                2. Search By Epic
-              </label>
-              <form onSubmit={handleEpicSearch} className="space-y-3">
-                <input 
-                  type="text"
-                  placeholder="Enter Epic Number"
-                  value={epicSearch}
-                  onChange={(e) => setEpicSearch(e.target.value)}
-                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-700 focus:border-blue-500 transition-all outline-none uppercase placeholder:normal-case"
-                />
-                <button 
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-slate-900 text-white rounded-xl py-3 font-black uppercase text-xs tracking-widest hover:bg-slate-800 transition-all flex items-center justify-center gap-2 active:scale-95"
+        <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-12 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+            {/* Sidebar / Controls */}
+            <aside className="lg:col-span-1 space-y-8">
+              {/* Sheet Selection */}
+              <div className="glass-card p-6 overflow-hidden relative">
+                <div className="absolute top-0 left-0 w-full h-1 primary-gradient"></div>
+                <label className="text-xs font-black text-white/50 uppercase mb-4 flex items-center gap-2 tracking-widest">
+                  <Database size={14} className="text-indigo-400" />
+                  1. Region Range
+                </label>
+                <select 
+                  value={sheetName}
+                  onChange={(e) => {
+                    setSheetName(e.target.value);
+                    setSelectedVoter(null);
+                    setSearchResult([]);
+                    setError(null);
+                  }}
+                  className="w-full bg-white/5 border-2 border-white/10 rounded-xl px-4 py-3 font-bold text-white focus:border-indigo-400 transition-all outline-none appearance-none"
                 >
-                  {loading ? <RefreshCcw className="animate-spin" size={16} /> : <Search size={16} />}
-                  Find Elector
-                </button>
-              </form>
-            </div>
-
-            {/* Advanced Search */}
-            <div className={`bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition-opacity ${!sheetName ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-              <label className="text-sm font-black text-slate-800 uppercase mb-4 flex items-center gap-2 tracking-tight">
-                <Users size={16} className="text-blue-600" />
-                Alternative Search
-              </label>
-              <form onSubmit={handleGeneralSearch} className="space-y-4">
-                <div className="flex bg-slate-100 p-1 rounded-lg">
-                  {(['name', 'serial'] as const).map(type => (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => setSearchBy(type)}
-                      className={`flex-1 py-1.5 rounded-md text-[10px] font-black uppercase tracking-tighter transition-all ${searchBy === type ? 'bg-white shadow-sm text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
-                    >
-                      {type}
-                    </button>
+                  <option value="" className="bg-slate-900">-- Choose Range --</option>
+                  {SHEET_RANGES.map(range => (
+                    <option key={range} value={range} className="bg-slate-900">{range}</option>
                   ))}
-                </div>
-                <input 
-                  type="text"
-                  placeholder={`Search by ${searchBy}...`}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-700 focus:border-blue-500 transition-all outline-none"
-                />
-                <button 
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-blue-600 text-white rounded-xl py-3 font-black uppercase text-xs tracking-widest hover:bg-blue-700 transition-all flex items-center justify-center gap-2 active:scale-95 shadow-md shadow-blue-100"
-                >
-                  {loading ? <RefreshCcw className="animate-spin" size={16} /> : <Search size={16} />}
-                  Browse List
-                </button>
-              </form>
-            </div>
-          </aside>
+                </select>
+              </div>
 
-          {/* Result Display Area */}
-          <div className="lg:col-span-3 min-h-[600px] relative">
-            <AnimatePresence mode="wait">
-              {loading && !selectedVoter && (
-                <motion.div 
-                  key="loading"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 flex flex-col items-center justify-center bg-slate-50/80 backdrop-blur-sm z-20"
-                >
-                  <div className="relative">
-                    <div className="w-16 h-16 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
-                    <Database className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-blue-600" size={24} />
-                  </div>
-                  <p className="mt-4 font-black uppercase text-xs tracking-[0.2em] text-slate-400 animate-pulse">Fetching Secure Data...</p>
-                </motion.div>
-              )}
-
-              {error && (
-                <motion.div 
-                  key="error"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="bg-red-50 border border-red-100 p-6 rounded-2xl flex items-center gap-4 text-red-700"
-                >
-                  <AlertCircle size={32} className="shrink-0" />
-                  <div>
-                    <h3 className="font-black uppercase text-sm tracking-tight">Access Error</h3>
-                    <p className="text-sm font-medium">{error}</p>
-                  </div>
-                </motion.div>
-              )}
-
-              {selectedVoter ? (
-                <motion.div 
-                  key="voter-details"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="space-y-4"
-                >
+              {/* Epic Search */}
+              <div className={`glass-card p-6 overflow-hidden relative transition-opacity ${!sheetName ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+                <label className="text-xs font-black text-white/50 uppercase mb-4 flex items-center gap-2 tracking-widest">
+                  <SearchCode size={14} className="text-purple-400" />
+                  2. Search By Epic
+                </label>
+                <form onSubmit={handleEpicSearch} className="space-y-4">
+                  <input 
+                    type="text"
+                    placeholder="Enter Epic Number"
+                    value={epicSearch}
+                    onChange={(e) => setEpicSearch(e.target.value)}
+                    className="w-full bg-white/5 border-2 border-white/10 rounded-xl px-4 py-3 font-bold text-white focus:border-purple-400 transition-all outline-none uppercase placeholder:normal-case placeholder:text-white/20"
+                  />
                   <button 
-                    onClick={() => setSelectedVoter(null)}
-                    className="flex items-center gap-1.5 text-xs font-black uppercase text-slate-400 hover:text-slate-800 transition-colors"
+                    type="submit"
+                    disabled={loading}
+                    className="primary-button group w-full p-0 h-[52px]"
                   >
-                    <ChevronRight size={14} className="rotate-180" /> Back to results
+                    <div className="absolute inset-0 primary-gradient group-hover:scale-110 transition-transform duration-300"></div>
+                    <div className="relative flex items-center gap-2">
+                      {loading ? <RefreshCcw className="animate-spin" size={16} /> : <Search size={16} />}
+                      Fetch Details
+                    </div>
                   </button>
-                  <VoterCard voter={selectedVoter} onUpdate={handleUpdate} isUpdating={isUpdating} />
-                </motion.div>
-              ) : searchResult.length > 0 ? (
-                <motion.div 
-                  key="results"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                >
-                  <div className="col-span-full border-b border-slate-200 pb-2 mb-2 flex justify-between items-end">
-                    <h2 className="font-black uppercase text-xs tracking-widest text-slate-400">Found {searchResult.length} Matches</h2>
-                  </div>
-                  {searchResult.map((voter) => (
-                    <motion.button
-                      key={voter.EpicNumber}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setSelectedVoter(voter)}
-                      className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-left hover:border-blue-500 hover:shadow-md transition-all group"
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="bg-slate-100 px-2 py-1 rounded text-[9px] font-black uppercase text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600">
-                          Epic: {voter.EpicNumber}
-                        </div>
-                        <div className="text-[10px] font-bold text-slate-400 uppercase">Part {voter.PartNo} | Serial {voter.SerialNo}</div>
-                      </div>
-                      <h3 className="font-black text-slate-800 text-lg group-hover:text-blue-600 transition-colors uppercase">{voter.ElectorsName}</h3>
-                      <p className="text-sm font-medium text-slate-500 mb-3">{voter.ElectorNameHindi}</p>
-                      <div className="flex items-center justify-end">
-                        <span className="text-[10px] font-black uppercase text-blue-600 flex items-center gap-1">View Profile <ChevronRight size={10} /></span>
-                      </div>
-                    </motion.button>
-                  ))}
-                </motion.div>
-              ) : !loading && (
-                <motion.div 
-                  key="empty"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex flex-col items-center justify-center h-full text-center space-y-4 py-20"
-                >
-                  <div className="bg-slate-100 p-8 rounded-full">
-                    <Database className="text-slate-300" size={64} />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">Ready for query</h3>
-                    <p className="text-sm font-medium text-slate-400 max-w-xs">Select a Part No range and enter an Epic number or use search criteria to fetch records from the Cloud Database.</p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </main>
+                </form>
+              </div>
 
-      <footer className="mt-20 border-t border-slate-200 bg-white py-12">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
-              <Database className="text-white" size={16} />
+              {/* Alternative Search */}
+              <div className={`glass-card p-6 overflow-hidden relative transition-opacity ${!sheetName ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+                <label className="text-xs font-black text-white/50 uppercase mb-4 flex items-center gap-2 tracking-widest">
+                  <Users size={14} className="text-pink-400" />
+                  3. Browse Mode
+                </label>
+                <form onSubmit={handleGeneralSearch} className="space-y-4">
+                  <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
+                    {(['name', 'serial'] as const).map(type => (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => setSearchBy(type)}
+                        className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${searchBy === type ? 'bg-white/10 shadow-lg text-white' : 'text-white/30 hover:text-white/50'}`}
+                      >
+                        {type}
+                      </button>
+                    ))}
+                  </div>
+                  <input 
+                    type="text"
+                    placeholder={`Type ${searchBy}...`}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-white/5 border-2 border-white/10 rounded-xl px-4 py-3 font-bold text-white focus:border-pink-400 transition-all outline-none placeholder:text-white/20"
+                  />
+                  <button 
+                    type="submit"
+                    disabled={loading}
+                    className="primary-button group w-full p-0 h-[52px]"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 group-hover:scale-110 transition-transform duration-300"></div>
+                    <div className="relative flex items-center gap-2">
+                      {loading ? <RefreshCcw className="animate-spin" size={16} /> : <Search size={16} />}
+                      Search List
+                    </div>
+                  </button>
+                </form>
+              </div>
+            </aside>
+
+            {/* Result Display Area */}
+            <div className="lg:col-span-3 min-h-[500px] relative">
+              <AnimatePresence mode="wait">
+                {loading && !selectedVoter && (
+                  <motion.div 
+                    key="loading"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 flex flex-col items-center justify-center z-20"
+                  >
+                    <div className="relative">
+                      <div className="w-20 h-20 border-4 border-white/10 border-t-indigo-400 rounded-full animate-spin"></div>
+                      <Database className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-indigo-400" size={32} />
+                    </div>
+                    <p className="mt-6 font-black uppercase text-xs tracking-[0.3em] text-white/40 animate-pulse">Syncing Cloud Nodes...</p>
+                  </motion.div>
+                )}
+
+                {error && (
+                  <motion.div 
+                    key="error"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="glass-card border-red-500/30 bg-red-500/10 p-8 flex items-center gap-6 text-red-200"
+                  >
+                    <div className="bg-red-500/20 p-4 rounded-2xl">
+                      <AlertCircle size={40} className="shrink-0 text-red-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-black uppercase text-sm tracking-widest text-red-400 mb-1">Process Halted</h3>
+                      <p className="text-sm font-medium opacity-80">{error}</p>
+                    </div>
+                  </motion.div>
+                )}
+
+                {selectedVoter ? (
+                  <motion.div 
+                    key="voter-details"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-6"
+                  >
+                    <button 
+                      onClick={() => setSelectedVoter(null)}
+                      className="inline-flex items-center gap-2 text-[10px] font-black uppercase text-white/40 hover:text-white transition-colors bg-white/5 px-4 py-2 rounded-full border border-white/10"
+                    >
+                      <ChevronRight size={14} className="rotate-180" /> Back to cluster
+                    </button>
+                    <VoterCard voter={selectedVoter} onUpdate={handleUpdate} isUpdating={isUpdating} />
+                  </motion.div>
+                ) : searchResult.length > 0 ? (
+                  <motion.div 
+                    key="results"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                  >
+                    <div className="col-span-full border-b border-white/10 pb-4 mb-2 flex justify-between items-end">
+                      <h2 className="font-black uppercase text-[10px] tracking-widest text-white/40">Query Results: {searchResult.length} Nodes Found</h2>
+                    </div>
+                    {searchResult.map((voter, index) => (
+                      <motion.button
+                        key={voter.EpicNumber}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        whileHover={{ scale: 1.02, translateY: -4 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setSelectedVoter(voter)}
+                        className="glass-card p-6 text-left group overflow-hidden relative"
+                      >
+                        <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="flex justify-between items-start mb-4">
+                          <div className="bg-indigo-500/20 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase text-indigo-300 border border-indigo-500/30">
+                            {voter.EpicNumber}
+                          </div>
+                          <div className="text-[10px] font-black text-white/30 uppercase tracking-tighter">P{voter.PartNo} | S{voter.SerialNo}</div>
+                        </div>
+                        <h3 className="font-black text-white text-xl group-hover:text-indigo-300 transition-colors uppercase tracking-tight">{voter.ElectorsName}</h3>
+                        <p className="text-sm font-medium text-white/40 mb-4">{voter.ElectorNameHindi}</p>
+                        <div className="flex items-center justify-end">
+                          <span className="text-[10px] font-black uppercase text-indigo-400 flex items-center gap-1 group-hover:gap-2 transition-all">Expand Node <ChevronRight size={10} /></span>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </motion.div>
+                ) : !loading && (
+                  <motion.div 
+                    key="empty"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex flex-col items-center justify-center h-full text-center py-20 px-4"
+                  >
+                    <div className="relative mb-8">
+                       <div className="absolute -inset-4 bg-indigo-500 rounded-full blur-2xl opacity-20 animate-pulse"></div>
+                       <div className="bg-white/5 p-12 rounded-full border border-white/10 relative">
+                        <Database className="text-white/20" size={80} />
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-black text-white uppercase tracking-tight mb-2">Idle System</h3>
+                      <p className="text-sm font-medium text-white/30 max-w-sm mx-auto leading-relaxed">
+                        Select a Part No range and enter sequence data to fetch records from the Cloud Intelligence Nodes.
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-            <span className="font-black uppercase tracking-widest text-xs">Voter Information System</span>
           </div>
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-tighter">© 2026 Secured Voter Management Network</p>
-          <div className="flex gap-6">
-            <span className="text-[10px] font-black uppercase text-slate-400">Database Ready</span>
-            <span className="text-[10px] font-black uppercase text-green-600 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-              API Synchronized
-            </span>
+        </main>
+
+        <footer className="mt-auto border-t border-white/10 bg-black/20 backdrop-blur-3xl py-12">
+          <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center border border-white/20">
+                <Database className="text-indigo-400" size={20} />
+              </div>
+              <span className="font-black uppercase tracking-[0.2em] text-[10px] text-white/60">Voter Intelligence Network</span>
+            </div>
+            <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">© 2026 Secured Data Infrastructure · Layer 1 Protocol</p>
+            <div className="flex gap-8">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full shadow-[0_0_8px_rgba(99,102,241,0.8)]"></div>
+                <span className="text-[10px] font-black uppercase text-white/40">Secure Node</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
+                <span className="text-[10px] font-black uppercase text-emerald-400">Live API</span>
+              </div>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
   );
 }

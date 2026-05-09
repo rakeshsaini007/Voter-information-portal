@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Voter } from '../types';
 import { motion } from 'motion/react';
-import { Save, User, Hash, FileText, Phone, CreditCard, Calendar, UserCheck } from 'lucide-react';
+import { Save, User, Hash, FileText, Phone, CreditCard, Calendar, UserCheck, RefreshCcw } from 'lucide-react';
 
 interface VoterCardProps {
   voter: Voter;
@@ -10,13 +10,13 @@ interface VoterCardProps {
 }
 
 const Field = ({ icon: Icon, label, value, readOnly = true, onChange, error, type = "text", placeholder }: any) => (
-  <div className="flex flex-col gap-1 w-full">
-    <label className="text-xs font-semibold text-gray-500 uppercase tracking-tighter flex items-center gap-1.5">
-      <Icon size={12} /> {label}
+  <div className="flex flex-col gap-2 w-full">
+    <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] flex items-center gap-2">
+      <Icon size={12} className="text-white/30" /> {label}
     </label>
     {readOnly ? (
-      <div className="bg-gray-50 border border-gray-200 rounded px-3 py-2 text-gray-800 font-medium min-h-[40px] flex items-center">
-        {value || '-'}
+      <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-bold min-h-[48px] flex items-center backdrop-blur-sm shadow-inner group-hover:bg-white/10 transition-colors">
+        {value || <span className="opacity-20 font-normal">No Data</span>}
       </div>
     ) : (
       <input
@@ -24,10 +24,10 @@ const Field = ({ icon: Icon, label, value, readOnly = true, onChange, error, typ
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`bg-white border rounded px-3 py-2 text-gray-800 font-bold focus:outline-none focus:ring-2 transition-all ${error ? 'border-red-500 focus:ring-red-200' : 'border-gray-300 focus:ring-blue-200 focus:border-blue-400'}`}
+        className={`bg-white/5 border-2 rounded-2xl px-5 py-4 text-white font-black text-lg outline-none focus:ring-4 transition-all ${error ? 'border-red-500/50 focus:ring-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.2)]' : 'border-white/10 focus:ring-indigo-500/20 focus:border-indigo-400/50 shadow-lg'}`}
       />
     )}
-    {error && <span className="text-[10px] text-red-500 font-medium">{error}</span>}
+    {error && <span className="text-[10px] text-red-400 font-black uppercase tracking-wider mt-1 ml-1">{error}</span>}
   </div>
 );
 
@@ -66,77 +66,88 @@ export const VoterCard: React.FC<VoterCardProps> = ({ voter, onUpdate, isUpdatin
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 max-w-4xl w-full mx-auto"
+      className="glass-card overflow-hidden max-w-4xl w-full mx-auto relative group"
     >
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-2xl font-black tracking-tight">{voter.ElectorsName}</h2>
-            <p className="text-blue-100 text-lg font-medium">{voter.ElectorNameHindi}</p>
+      <div className="absolute top-0 left-0 w-full h-1.5 primary-gradient"></div>
+      
+      <div className="bg-white/5 p-8 border-b border-white/10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="space-y-1">
+            <h2 className="text-3xl font-black tracking-tight text-white uppercase">{voter.ElectorsName}</h2>
+            <p className="text-indigo-400/80 text-xl font-bold">{voter.ElectorNameHindi}</p>
           </div>
-          <div className="bg-white/20 backdrop-blur-md rounded-lg px-4 py-2 text-right">
-            <span className="block text-[10px] uppercase font-bold opacity-80">Epic Number</span>
-            <span className="text-xl font-mono font-bold tracking-widest">{voter.EpicNumber}</span>
+          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/10 shadow-2xl min-w-[200px]">
+            <span className="block text-[10px] uppercase font-black tracking-widest text-white/40 mb-1">Epic Reference</span>
+            <span className="text-2xl font-black text-white tracking-widest block">{voter.EpicNumber}</span>
           </div>
         </div>
       </div>
 
-      <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="col-span-full grid grid-cols-2 lg:grid-cols-4 gap-6">
-          <Field icon={Hash} label="AC No" value={voter.ACNo} />
-          <Field icon={FileText} label="Part No" value={voter.PartNo} />
-          <Field icon={FileText} label="Serial No" value={voter.SerialNo} />
-          <Field icon={UserCheck} label="Gender" value={voter.ElectorGender} />
+      <div className="p-8 space-y-10">
+        <div>
+          <div className="section-title mb-6">Demographic Profile</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <Field icon={Hash} label="AC No" value={voter.ACNo} />
+            <Field icon={FileText} label="Part No" value={voter.PartNo} />
+            <Field icon={FileText} label="Serial No" value={voter.SerialNo} />
+            <Field icon={UserCheck} label="Gender" value={voter.ElectorGender} />
+          </div>
         </div>
 
-        <div className="col-span-full grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Field icon={Calendar} label="Age" value={voter.Age} />
           <Field icon={User} label="Relative Type" value={voter.Relativetype} />
         </div>
 
-        <div className="col-span-full border-t border-gray-100 pt-6"></div>
-
-        <div className="col-span-full grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white/5 p-6 rounded-2xl border border-white/10">
           <Field icon={User} label="Relative Name" value={voter.RelativeName} />
           <Field icon={User} label="Relative Name (Hindi)" value={voter.RelativeNameHindi} />
         </div>
 
-        <div className="col-span-full border-t border-gray-100 pt-6"></div>
-
-        <div className="col-span-full grid grid-cols-1 md:grid-cols-2 gap-8 bg-blue-50/50 p-6 rounded-xl border border-blue-100">
-          <Field 
-            icon={CreditCard} 
-            label="Adhar Number" 
-            value={adhar} 
-            readOnly={false} 
-            onChange={setAdhar}
-            error={errors.adhar}
-            placeholder="12 digit Aadhaar"
-          />
-          <Field 
-            icon={Phone} 
-            label="Mobile Number *" 
-            value={mobile} 
-            readOnly={false} 
-            onChange={setMobile}
-            error={errors.mobile}
-            placeholder="10 digit Mobile"
-          />
+        <div className="relative group">
+          <div className="absolute -top-10 left-0">
+            <div className="section-title">Identity Update Node</div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-indigo-500/5 p-8 rounded-3xl border-2 border-indigo-500/20 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-3xl rounded-full"></div>
+            <div className="relative z-10">
+              <Field 
+                icon={CreditCard} 
+                label="Adhar Number" 
+                value={adhar} 
+                readOnly={false} 
+                onChange={setAdhar}
+                error={errors.adhar}
+                placeholder="12 digit Aadhaar"
+              />
+            </div>
+            <div className="relative z-10">
+              <Field 
+                icon={Phone} 
+                label="Mobile Number *" 
+                value={mobile} 
+                readOnly={false} 
+                onChange={setMobile}
+                error={errors.mobile}
+                placeholder="10 digit Mobile"
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="col-span-full flex justify-end">
+        <div className="flex justify-end pt-4">
           <button
             onClick={handleSave}
             disabled={isUpdating}
-            className={`
-              flex items-center gap-2 px-8 py-3 rounded-full font-bold text-lg shadow-lg transition-all
-              ${isUpdating ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white active:scale-95 shadow-blue-200'}
-            `}
+            className="primary-button group min-w-[240px]"
           >
-            <Save size={20} />
-            {isUpdating ? 'Updating...' : 'Save Changes'}
+            <div className={`absolute inset-0 transition-transform duration-500 group-hover:scale-110 ${isUpdating ? 'bg-slate-600' : 'primary-gradient'}`}></div>
+            <div className="relative flex items-center gap-3 px-10 py-5 text-white">
+              {isUpdating ? <RefreshCcw className="animate-spin" size={20} /> : <Save size={20} />}
+              <span className="text-base font-black tracking-widest">{isUpdating ? 'Updating Node...' : 'Commit Changes'}</span>
+            </div>
           </button>
         </div>
       </div>
