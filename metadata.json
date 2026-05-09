@@ -1,0 +1,6 @@
+{
+  "name": "Voter Information Portal",
+  "description": "A comprehensive voter information management system that connects with Google Sheets to fetch, search, and update elector details including Aadhaar and Mobile numbers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
