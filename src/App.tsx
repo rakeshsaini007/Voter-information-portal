@@ -23,7 +23,7 @@ export default function App() {
   const [sheetName, setSheetName] = useState('');
   const [epicSearch, setEpicSearch] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchBy, setSearchBy] = useState<'name' | 'serial'>('name');
+  const [searchBy, setSearchBy] = useState<'name' | 'serial' | 'part'>('name');
   
   const [loading, setLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -136,7 +136,7 @@ export default function App() {
                 <div className="absolute top-0 left-0 w-full h-1 primary-gradient"></div>
                 <label className="text-xs font-black text-white/50 uppercase mb-4 flex items-center gap-2 tracking-widest">
                   <Database size={14} className="text-indigo-400" />
-                  1. Region Range
+                  1. PART RANGE
                 </label>
                 <select 
                   value={sheetName}
@@ -193,14 +193,14 @@ export default function App() {
                 </label>
                 <form onSubmit={handleGeneralSearch} className="space-y-4">
                   <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
-                    {(['name', 'serial'] as const).map(type => (
+                    {(['name', 'serial', 'part'] as const).map(type => (
                       <button
                         key={type}
                         type="button"
                         onClick={() => setSearchBy(type)}
                         className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${searchBy === type ? 'bg-white/10 shadow-lg text-white' : 'text-white/30 hover:text-white/50'}`}
                       >
-                        {type}
+                        {type === 'part' ? 'PART NO' : type}
                       </button>
                     ))}
                   </div>
@@ -303,7 +303,7 @@ export default function App() {
                           <div className="bg-indigo-500/20 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase text-indigo-300 border border-indigo-500/30">
                             {voter.EpicNumber}
                           </div>
-                          <div className="text-[10px] font-black text-white/30 uppercase tracking-tighter">P{voter.PartNo} | S{voter.SerialNo}</div>
+                          <div className="text-[10px] font-black text-red-500 uppercase tracking-tighter">P{voter.PartNo} | S{voter.SerialNo}</div>
                         </div>
                         <h3 className="font-black text-white text-xl group-hover:text-indigo-300 transition-colors uppercase tracking-tight">{voter.ElectorsName}</h3>
                         <p className="text-sm font-medium text-white/40 mb-4">{voter.ElectorNameHindi}</p>

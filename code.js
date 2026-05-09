@@ -46,8 +46,15 @@ function doGet(e) {
     else return contentResponse({ error: "Invalid searchBy parameter" });
 
     const results = rows
-      .filter(row => String(row[colIndex]).toLowerCase().includes(query))
-      .slice(0, 50) // Limit results
+      .filter(row => {
+        const cellValue = String(row[colIndex]).toLowerCase().trim();
+        // Exact match for Part No and Serial No to prevent "1" matching "10", "100" etc.
+        if (searchBy === 'part' || searchBy === 'serial') {
+          return cellValue === query.trim();
+        }
+        // Partial match for Elector's Name
+        return cellValue.includes(query.trim());
+      })
       .map(row => rowToObject(headers, row));
     
     return contentResponse({ data: results });
