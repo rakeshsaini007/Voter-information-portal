@@ -304,7 +304,7 @@ export default function App() {
                   </div>
                   <div>
                     <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">Ready for query</h3>
-                    <p className="text-sm font-medium text-slate-400 max-w-xs">Select a sheet range and enter an Epic number or use search criteria to fetch records from the Cloud Database.</p>
+                    <p className="text-sm font-medium text-slate-400 max-w-xs">Select a Part No range and enter an Epic number or use search criteria to fetch records from the Cloud Database.</p>
                   </div>
                 </motion.div>
               )}
