@@ -23,7 +23,7 @@ export default function App() {
   const [sheetName, setSheetName] = useState('');
   const [epicSearch, setEpicSearch] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchBy, setSearchBy] = useState<'name' | 'serial' | 'part'>('name');
+  const [searchBy, setSearchBy] = useState<'name' | 'serial' | 'part'>('part');
   
   const [loading, setLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -193,7 +193,7 @@ export default function App() {
                 </label>
                 <form onSubmit={handleGeneralSearch} className="space-y-4">
                   <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
-                    {(['name', 'serial', 'part'] as const).map(type => (
+                    {(['part', 'serial', 'name'] as const).map(type => (
                       <button
                         key={type}
                         type="button"
@@ -285,7 +285,7 @@ export default function App() {
                     className="grid grid-cols-1 md:grid-cols-2 gap-6"
                   >
                     <div className="col-span-full border-b border-white/10 pb-4 mb-2 flex justify-between items-end">
-                      <h2 className="font-black uppercase text-[10px] tracking-widest text-white/40">Query Results: {searchResult.length} Nodes Found</h2>
+                      <h2 className="font-black uppercase text-[10px] tracking-widest text-red-500">Query Results: {searchResult.length} Nodes Found</h2>
                     </div>
                     {searchResult.map((voter, index) => (
                       <motion.button
