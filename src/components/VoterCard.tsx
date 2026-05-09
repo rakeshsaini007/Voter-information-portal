@@ -50,8 +50,8 @@ export const VoterCard: React.FC<VoterCardProps> = ({ voter, onUpdate, isUpdatin
     
     if (!mobile) {
       newErrors.mobile = "Mobile number is mandatory";
-    } else if (!/^\d{10}$/.test(mobile)) {
-      newErrors.mobile = "Mobile number must be 10 digits";
+    } else if (!/^[6-9]\d{9}$/.test(mobile)) {
+      newErrors.mobile = "Enter a valid 10-digit Indian mobile number";
     }
     
     setErrors(newErrors);
