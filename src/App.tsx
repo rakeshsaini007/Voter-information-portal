@@ -24,6 +24,9 @@ export default function App() {
   const [epicSearch, setEpicSearch] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchBy, setSearchBy] = useState<'name' | 'serial' | 'part'>('part');
+  const [secondaryQuery, setSecondaryQuery] = useState('');
+  const [secondarySearchBy, setSecondarySearchBy] = useState<'name' | 'serial'>('serial');
+  const [isPartFetched, setIsPartFetched] = useState(false);
   
   const [loading, setLoading] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -59,17 +62,20 @@ export default function App() {
   const handleGeneralSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!sheetName) return setError('Please select a sheet range first.');
-    if (!searchQuery) return setError('Please enter a search query.');
+    if (!searchQuery) return setError('Please enter a Part Number.');
     
     setLoading(true);
     setError(null);
     setSelectedVoter(null);
+    setIsPartFetched(false);
     
     try {
-      const results = await gasService.searchVoters(sheetName, searchQuery, searchBy);
+      const results = await gasService.searchVoters(sheetName, searchQuery, 'part');
       setSearchResult(results);
       if (results.length === 0) {
-        setError('No matches found.');
+        setError('No matches found for this Part Number.');
+      } else {
+        setIsPartFetched(true);
       }
     } catch (err: any) {
       setError(err.message || 'Failed to search voters.');
@@ -77,6 +83,16 @@ export default function App() {
       setLoading(false);
     }
   };
+
+  const filteredResults = searchResult.filter(voter => {
+    if (!secondaryQuery) return true;
+    const query = secondaryQuery.toLowerCase();
+    if (secondarySearchBy === 'serial') {
+      return String(voter.SerialNo) === query;
+    }
+    return voter.ElectorsName?.toLowerCase().includes(query) || 
+           voter.ElectorNameHindi?.toLowerCase().includes(query);
+  });
 
   const handleUpdate = async (adhar: string, mobile: string) => {
     if (!selectedVoter) return;
@@ -184,29 +200,20 @@ export default function App() {
                 </form>
               </div>
 
-              {/* Alternative Search */}
+              {/* Alternative Search (Browse Mode) */}
               <div className={`glass-card p-6 overflow-hidden relative transition-opacity ${!sheetName ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-500"></div>
                 <label className="text-xs font-black text-white/50 uppercase mb-4 flex items-center gap-2 tracking-widest">
                   <Users size={14} className="text-pink-400" />
-                  3. Browse Mode
+                  3. Browse Mode (Step 1)
                 </label>
                 <form onSubmit={handleGeneralSearch} className="space-y-4">
-                  <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
-                    {(['part', 'serial', 'name'] as const).map(type => (
-                      <button
-                        key={type}
-                        type="button"
-                        onClick={() => setSearchBy(type)}
-                        className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${searchBy === type ? 'bg-white/10 shadow-lg text-white' : 'text-white/30 hover:text-white/50'}`}
-                      >
-                        {type === 'part' ? 'PART NO' : type}
-                      </button>
-                    ))}
+                  <div className="bg-white/5 p-3 rounded-lg text-[10px] font-black uppercase text-white/30 tracking-widest text-center border border-white/5 mb-2">
+                    Enter Part Number First
                   </div>
                   <input 
                     type="text"
-                    placeholder={`Type ${searchBy}...`}
+                    placeholder="Enter PART NO..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full bg-white/5 border-2 border-white/10 rounded-xl px-4 py-3 font-bold text-white focus:border-pink-400 transition-all outline-none placeholder:text-white/20"
@@ -219,11 +226,53 @@ export default function App() {
                     <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 group-hover:scale-110 transition-transform duration-300"></div>
                     <div className="relative flex items-center gap-2">
                       {loading ? <RefreshCcw className="animate-spin" size={16} /> : <Search size={16} />}
-                      Search List
+                      Fetch Part Cluster
                     </div>
                   </button>
                 </form>
               </div>
+
+              {/* Secondary Filter (Browse Mode Step 2) */}
+              <AnimatePresence>
+                {isPartFetched && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="glass-card p-6 overflow-hidden relative"
+                  >
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+                    <label className="text-xs font-black text-white/50 uppercase mb-4 flex items-center gap-2 tracking-widest">
+                      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                      4. Filter Results (Step 2)
+                    </label>
+                    <div className="space-y-4">
+                      <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
+                        {(['serial', 'name'] as const).map(type => (
+                          <button
+                            key={type}
+                            type="button"
+                            onClick={() => setSecondarySearchBy(type)}
+                            className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${secondarySearchBy === type ? 'bg-white/10 shadow-lg text-white' : 'text-white/30 hover:text-white/50'}`}
+                          >
+                            {type === 'serial' ? 'SERIAL NO' : 'NAME'}
+                          </button>
+                        ))}
+                      </div>
+                      <input 
+                        type="text"
+                        placeholder={`Filter by ${secondarySearchBy === 'serial' ? 'Serial No' : 'Name'}...`}
+                        value={secondaryQuery}
+                        onChange={(e) => setSecondaryQuery(e.target.value)}
+                        className="w-full bg-white/5 border-2 border-white/10 rounded-xl px-4 py-2 text-sm font-bold text-white focus:border-emerald-400 transition-all outline-none placeholder:text-white/20"
+                      />
+                      <div className="text-[10px] font-black text-white/20 uppercase tracking-widest text-center">
+                        Filtering {searchResult.length} Nodes Locally
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </aside>
 
             {/* Result Display Area */}
@@ -285,14 +334,16 @@ export default function App() {
                     className="grid grid-cols-1 md:grid-cols-2 gap-6"
                   >
                     <div className="col-span-full border-b border-white/10 pb-4 mb-2 flex justify-between items-end">
-                      <h2 className="font-black uppercase text-[10px] tracking-widest text-red-500">Query Results: {searchResult.length} Nodes Found</h2>
+                      <h2 className="font-black uppercase text-[10px] tracking-widest text-red-500">
+                        Query Results: {filteredResults.length} Nodes Match Filter (In Cluster of {searchResult.length})
+                      </h2>
                     </div>
-                    {searchResult.map((voter, index) => (
+                    {filteredResults.map((voter, index) => (
                       <motion.button
                         key={voter.EpicNumber}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
+                        transition={{ delay: Math.min(index * 0.02, 0.5) }} // Cap delay for large lists
                         whileHover={{ scale: 1.02, translateY: -4 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setSelectedVoter(voter)}
@@ -312,6 +363,11 @@ export default function App() {
                         </div>
                       </motion.button>
                     ))}
+                    {filteredResults.length === 0 && (
+                      <div className="col-span-full py-20 text-center glass-card border-dashed">
+                        <p className="text-white/40 font-black uppercase text-xs tracking-widest">No nodes match the secondary filter</p>
+                      </div>
+                    )}
                   </motion.div>
                 ) : !loading && (
                   <motion.div 
